@@ -1,5 +1,6 @@
 package herbaccara.toss.payments
 
+import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsProperties
 import herbaccara.toss.payments.model.webhook.DepositCallback
 import herbaccara.toss.payments.model.webhook.Event
 import herbaccara.toss.payments.model.webhook.Event.*
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("\${toss.payments.webhook.path}")
+@RequestMapping("\${toss.payments.webhook.path:${TossPaymentsProperties.DEFAULT_WEBHOOK_PATH}}")
 class WebhookController(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
