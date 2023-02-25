@@ -13,14 +13,14 @@ data class Payment(
     @field:JsonProperty("mId")
     val mId: String,
     val currency: String,
-    val method: String,
+    val method: String? = null,
     val totalAmount: Long,
     val balanceAmount: Long,
     val status: Status,
     val requestedAt: OffsetDateTime,
     val approvedAt: OffsetDateTime? = null,
     val useEscrow: Boolean,
-    val lastTransactionKey: String,
+    val lastTransactionKey: String? = null,
     val suppliedAmount: Long,
     val vat: Long,
     val cultureExpense: Boolean,
@@ -34,7 +34,7 @@ data class Payment(
     val mobilePhone: MobilePhone? = null,
     val giftCertificate: GiftCertificate? = null,
     val transfer: Transfer? = null,
-    val receipt: Receipt,
+    val receipt: Receipt? = null,
 
     /***
      * <pre>
