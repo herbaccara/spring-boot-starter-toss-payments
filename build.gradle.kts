@@ -12,6 +12,12 @@ group = "herbaccara"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+val jar: Jar by tasks
+val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
+
+bootJar.enabled = false
+jar.enabled = true
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -19,7 +25,7 @@ configurations {
 }
 
 kotlinter {
-    disabledRules = arrayOf("no-wildcard-imports")
+    disabledRules = arrayOf("no-wildcard-imports", "enum-entry-name-case")
 }
 
 repositories {

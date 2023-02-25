@@ -11,6 +11,7 @@ class SettlementListForm(
     val page: Long? = null,
     val size: Long? = null
 ) {
+    @Suppress("EnumEntryName")
     enum class DateType {
         /***
          * 정산 매출일
