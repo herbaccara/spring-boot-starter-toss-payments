@@ -33,12 +33,12 @@ class TossPaymentsAutoConfiguration {
 
     @Bean("tossPaymentsRestTemplate")
     fun restTemplate(
+        properties: TossPaymentsProperties,
         @Qualifier("tossPaymentsObjectMapper") objectMapper: ObjectMapper,
-        properties: TossPaymentsProperties
+        customizers: List<TossPaymentsRestTemplateBuilderCustomizer>,
+        interceptors: List<TossPaymentsClientHttpRequestInterceptor>
     ): RestTemplate {
-        if (properties.clientSecret.isEmpty()) {
-            throw NullPointerException()
-        }
+        if (properties.clientSecret.isEmpty()) throw NullPointerException()
 
         // 인증 : https://docs.tosspayments.com/guides/using-api/authorization#%EC%9D%B8%EC%A6%9D
         val authorization = Base64.getEncoder().encodeToString("${properties.clientSecret}:".toByteArray())
@@ -54,10 +54,16 @@ class TossPaymentsAutoConfiguration {
                     execution.execute(request, body)
                 }
             )
+            .additionalInterceptors(*interceptors.toTypedArray())
             .messageConverters(
                 StringHttpMessageConverter(StandardCharsets.UTF_8),
                 MappingJackson2HttpMessageConverter(objectMapper)
             )
+            .also { builder ->
+                for (customizer in customizers) {
+                    customizer.customize(builder)
+                }
+            }
             .build()
     }
 
