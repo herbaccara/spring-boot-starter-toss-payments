@@ -7,7 +7,6 @@ import herbaccara.toss.payments.TossPaymentsService
 import herbaccara.toss.payments.TossPaymentsWebhookController
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -19,7 +18,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -29,9 +27,8 @@ import java.util.*
 class TossPaymentsAutoConfiguration {
 
     @AutoConfiguration
-    @ConditionalOnClass(value = [WebMvcConfigurer::class])
     @ConditionalOnProperty(prefix = "toss.payments.webhook", value = ["enabled"], havingValue = "true")
-    class TossPaymentsWebMvcConfigurer : WebMvcConfigurer {
+    class TossPaymentsWebMvcConfigurer {
 
         @Bean
         @ConditionalOnMissingBean(TossPaymentsWebhookController::class)
