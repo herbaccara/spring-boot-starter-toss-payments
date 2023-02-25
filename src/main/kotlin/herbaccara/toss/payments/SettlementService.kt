@@ -9,8 +9,6 @@ import org.springframework.web.client.getForObject
 import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.Map
 import kotlin.collections.List
 
 class SettlementService(
@@ -57,7 +55,7 @@ class SettlementService(
      */
     fun request(paymentKey: String): Boolean {
         val uri = "/v1/settlements"
-        val form = Map.of("paymentKey", paymentKey)
+        val form = mapOf("paymentKey" to paymentKey)
         val jsonNode: JsonNode = restTemplate.postForObject(uri, form)
         return jsonNode["result"].asBoolean()
     }
