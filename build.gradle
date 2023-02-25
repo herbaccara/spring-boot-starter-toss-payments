@@ -4,8 +4,6 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'org.springframework.boot' version '3.0.3'
-    id 'io.spring.dependency-management' version '1.1.0'
     id 'org.jetbrains.kotlin.jvm' version '1.8.10'
     id 'org.jetbrains.kotlin.plugin.spring' version '1.8.10'
     id "org.jmailen.kotlinter" version "3.13.0"
@@ -14,9 +12,6 @@ plugins {
 group = 'herbaccara'
 version = '0.0.1'
 sourceCompatibility = '17'
-
-bootJar.enabled = false
-jar.enabled = true
 
 publishing {
     publications {
@@ -30,12 +25,6 @@ publishing {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 kotlinter {
     disabledRules = ["no-wildcard-imports", "enum-entry-name-case"]
 }
@@ -45,16 +34,18 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    implementation 'org.springframework:spring-web'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.springframework:spring-context:6.0.2'
+    implementation 'org.springframework:spring-web:6.0.2'
+
+    implementation 'org.springframework.boot:spring-boot:3.0.3'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:3.0.3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.3'
+
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
 }
 
 tasks.withType(KotlinCompile) {

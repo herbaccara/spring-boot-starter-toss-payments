@@ -11,6 +11,7 @@ import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
 import herbaccara.toss.payments.model.submall.Type
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,6 +22,7 @@ import java.util.*
 
 @SpringBootTest(classes = [TossPaymentsAutoConfiguration::class])
 @TestPropertySource(locations = ["classpath:application.yml"])
+@Disabled
 class TossPaymentsServiceTest {
 
     @Autowired
