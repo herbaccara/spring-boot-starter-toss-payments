@@ -10,4 +10,8 @@ data class SubmallCreateForm(
     val representativeName: String? = null,
     val businessNumber: String? = null,
     val metadata: Map<String, Any>? = null
-)
+) {
+    init {
+        if (subMallId.length > 20) throw IllegalArgumentException()
+    }
+}

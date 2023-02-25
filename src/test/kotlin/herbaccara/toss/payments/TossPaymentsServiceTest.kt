@@ -1,9 +1,16 @@
 package herbaccara.toss.payments
 
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsAutoConfiguration
+import herbaccara.toss.payments.form.billing.BillingApproveForm
+import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.payment.Method
 import herbaccara.toss.payments.form.payment.PaymentCreateForm
 import herbaccara.toss.payments.form.payment.PaymentKeyInForm
+import herbaccara.toss.payments.form.submall.Account
+import herbaccara.toss.payments.form.submall.SubmallCreateForm
+import herbaccara.toss.payments.form.submall.SubmallUpdateForm
+import herbaccara.toss.payments.model.submall.Type
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,6 +32,76 @@ class TossPaymentsServiceTest {
 
     fun orderId(): String {
         return "order-${UUID.randomUUID()}"
+    }
+
+    fun submallId(): String {
+        return "submall-${UUID.randomUUID()}".take(20)
+    }
+
+    @Test
+    fun billing() {
+        val customerKey = "RJtKd3c9QnPfboS_2kTIM"
+
+        val billing = tossPaymentsService.billingAuthorizationCard(
+            BillingAuthorizationCardForm(
+                customerKey,
+                "422155" + "1234123412",
+                "20",
+                "11",
+                "831020"
+            )
+        )
+        println()
+
+        val payment = tossPaymentsService.billingApprove(
+            billing.billingKey,
+            BillingApproveForm(
+                customerKey,
+                15000L,
+                orderId(),
+                "2022년 2월 정기구독"
+            )
+        )
+        println()
+    }
+
+    @Test
+    fun submall() {
+        val submall1 = tossPaymentsService.submallCreate(
+            SubmallCreateForm(
+                submallId(),
+                Account(
+                    "06",
+                    "00990204333123",
+                    "포애도"
+                ),
+                Type.CORPORATE,
+                companyName = "콩콩이",
+                representativeName = "손재영",
+                businessNumber = "1234567891"
+            )
+        )
+
+        val subMallId = submall1.subMallId
+
+        val submall2 = tossPaymentsService.submallUpdate(
+            subMallId,
+            SubmallUpdateForm(
+                Account(
+                    "06",
+                    "00990204333123",
+                    "포애도"
+                ),
+                "콩콩이",
+                "손재영",
+                "1234567891"
+            )
+        )
+        println()
+
+        val s = tossPaymentsService.submallDelete(subMallId)
+
+        assertEquals(subMallId, s)
     }
 
     @Test
