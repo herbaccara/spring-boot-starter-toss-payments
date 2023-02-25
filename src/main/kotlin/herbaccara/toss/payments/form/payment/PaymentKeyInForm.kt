@@ -3,7 +3,7 @@ package herbaccara.toss.payments.form.payment
 import com.fasterxml.jackson.annotation.JsonInclude
 import herbaccara.toss.payments.form.Vbv
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class PaymentKeyInForm(
     val amount: Long,
     val orderId: String,

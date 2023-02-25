@@ -2,7 +2,7 @@ package herbaccara.toss.payments.form.payment
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class PaymentVirtualAccountForm(
     val amount: Long,
     val orderId: String,

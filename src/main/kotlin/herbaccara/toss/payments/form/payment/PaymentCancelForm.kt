@@ -2,7 +2,7 @@ package herbaccara.toss.payments.form.payment
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class PaymentCancelForm(
     val cancelReason: String,
     /***

@@ -2,7 +2,7 @@ package herbaccara.toss.payments.form.billing
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class BillingApproveForm(
     val customerKey: String,
     val amount: Long,

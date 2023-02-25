@@ -3,7 +3,7 @@ package herbaccara.toss.payments.form.transaction
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class TransactionListForm(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
