@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.toss.payments.TossPaymentsService
-import herbaccara.toss.payments.WebhookController
+import herbaccara.toss.payments.TossPaymentsWebhookController
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -34,9 +34,9 @@ class TossPaymentsAutoConfiguration {
     class TossPaymentsWebMvcConfigurer : WebMvcConfigurer {
 
         @Bean
-        @ConditionalOnMissingBean(WebhookController::class)
-        fun webhookController(applicationEventPublisher: ApplicationEventPublisher): WebhookController {
-            return WebhookController(applicationEventPublisher)
+        @ConditionalOnMissingBean(TossPaymentsWebhookController::class)
+        fun tossPaymentsWebhookController(applicationEventPublisher: ApplicationEventPublisher): TossPaymentsWebhookController {
+            return TossPaymentsWebhookController(applicationEventPublisher)
         }
     }
 
