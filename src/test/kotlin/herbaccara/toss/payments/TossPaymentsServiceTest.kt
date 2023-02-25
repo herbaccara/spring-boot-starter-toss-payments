@@ -3,7 +3,8 @@ package herbaccara.toss.payments
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsAutoConfiguration
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsClientHttpRequestInterceptor
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuilderCustomizer
-import herbaccara.toss.payments.TossPaymentsServiceTest.*
+import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsClientHttpRequestInterceptor
+import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsRestTemplateBuilderCustomizer
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.payment.Method
@@ -12,8 +13,9 @@ import herbaccara.toss.payments.form.payment.PaymentKeyInForm
 import herbaccara.toss.payments.form.submall.Account
 import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
+import herbaccara.toss.payments.model.payment.Payment
 import herbaccara.toss.payments.model.submall.Type
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -135,6 +137,27 @@ class TossPaymentsServiceTest {
         val s = tossPaymentsService.submallDelete(subMallId)
 
         assertEquals(subMallId, s)
+    }
+
+    @Test
+    fun paymentCreate() {
+        val payments = Method.values()
+            .map { method ->
+                val form = PaymentCreateForm(
+                    method,
+                    100L,
+                    orderId(),
+                    "토스 티셔츠 외 100건",
+                    successUrl,
+                    failUrl
+                )
+
+                tossPaymentsService.paymentCreate(form).also {payment->
+                    println("paymentKey : ${payment.paymentKey}, method : ${method}, checkoutUrl : ${payment.checkout.url}")
+                }
+            }
+
+        println()
     }
 
     @Test
