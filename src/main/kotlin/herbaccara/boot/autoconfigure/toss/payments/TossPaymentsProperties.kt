@@ -1,9 +1,11 @@
 package herbaccara.boot.autoconfigure.toss.payments
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
 import java.time.Duration
 
 @ConfigurationProperties(prefix = "toss.payments")
+@ConstructorBinding
 data class TossPaymentsProperties(
     val clientKey: String,
     val clientSecret: String,

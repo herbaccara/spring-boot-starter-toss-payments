@@ -1,6 +1,9 @@
 package herbaccara.toss.payments
 
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsAutoConfiguration
+import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsClientHttpRequestInterceptor
+import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuilderCustomizer
+import herbaccara.toss.payments.TossPaymentsServiceTest.*
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.payment.Method
@@ -11,19 +14,47 @@ import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
 import herbaccara.toss.payments.model.submall.Type
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.http.HttpRequest
+import org.springframework.http.client.ClientHttpRequestExecution
+import org.springframework.http.client.ClientHttpResponse
+import org.springframework.stereotype.Component
 import org.springframework.test.context.TestPropertySource
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@SpringBootTest(classes = [TossPaymentsAutoConfiguration::class])
+@SpringBootTest(
+    classes = [
+        TossPaymentsAutoConfiguration::class,
+        TestTossPaymentsRestTemplateBuilderCustomizer::class,
+        TestTossPaymentsClientHttpRequestInterceptor::class
+    ]
+)
 @TestPropertySource(locations = ["classpath:application.yml"])
-@Disabled
 class TossPaymentsServiceTest {
+
+    @Component
+    class TestTossPaymentsRestTemplateBuilderCustomizer : TossPaymentsRestTemplateBuilderCustomizer {
+        override fun customize(restTemplateBuilder: RestTemplateBuilder) {
+            println()
+        }
+    }
+
+    @Component
+    class TestTossPaymentsClientHttpRequestInterceptor : TossPaymentsClientHttpRequestInterceptor {
+
+        override fun intercept(
+            request: HttpRequest,
+            body: ByteArray,
+            execution: ClientHttpRequestExecution
+        ): ClientHttpResponse {
+            return execution.execute(request, body)
+        }
+    }
 
     @Autowired
     lateinit var tossPaymentsService: TossPaymentsService
