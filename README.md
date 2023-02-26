@@ -1,7 +1,7 @@
 # spring-boot-starter-toss-payments
 spring boot starter toss payments
 
-토스 API 버전 2022-11-16 으로 작성되었습니다.
+토스페이먼츠 API 버전 2022-11-16 으로 작성되었습니다.
 
 ## How to
 To get a Git project into your build:
