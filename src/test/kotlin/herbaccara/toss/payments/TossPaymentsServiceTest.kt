@@ -13,7 +13,6 @@ import herbaccara.toss.payments.form.payment.PaymentKeyInForm
 import herbaccara.toss.payments.form.submall.Account
 import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
-import herbaccara.toss.payments.model.payment.Payment
 import herbaccara.toss.payments.model.submall.Type
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -152,8 +151,8 @@ class TossPaymentsServiceTest {
                     failUrl
                 )
 
-                tossPaymentsService.paymentCreate(form).also {payment->
-                    println("paymentKey : ${payment.paymentKey}, method : ${method}, checkoutUrl : ${payment.checkout.url}")
+                tossPaymentsService.paymentCreate(form).also { payment ->
+                    println("paymentKey : ${payment.paymentKey}, method : $method, checkoutUrl : ${payment.checkout.url}")
                 }
             }
 
