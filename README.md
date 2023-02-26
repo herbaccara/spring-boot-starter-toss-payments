@@ -42,9 +42,9 @@ toss:
 
 ## 사용하기
 ```kotlin
-class SpringComponent {
+class SpringComponent (
     private val tossPaymentsService: TossPaymentsService
-}
+)
 
 ```
 
