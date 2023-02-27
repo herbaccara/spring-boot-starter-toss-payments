@@ -7,7 +7,7 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "toss.payments")
 @ConstructorBinding
 data class TossPaymentsProperties(
-    val enabled: Boolean,
+    val enabled: Boolean = true,
     val clientKey: String,
     val clientSecret: String,
     val rootUri: String = "https://api.tosspayments.com",
