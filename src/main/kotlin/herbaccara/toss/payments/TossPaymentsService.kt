@@ -157,12 +157,9 @@ class TossPaymentsService(
         return transactionService.list(form)
     }
 
-    fun transactions(startDate: LocalDateTime, endDate: LocalDateTime): List<Transaction> {
+    @JvmOverloads
+    fun transactions(startDate: LocalDateTime, endDate: LocalDateTime = LocalDateTime.now()): List<Transaction> {
         return transactions(TransactionListForm(startDate, endDate))
-    }
-
-    fun transactions(startDate: LocalDateTime): List<Transaction> {
-        return transactions(startDate, LocalDateTime.now())
     }
 
     // 정산
@@ -176,12 +173,9 @@ class TossPaymentsService(
         return settlementService.list(form)
     }
 
-    fun settlements(startDate: LocalDate, endDate: LocalDate): List<Settlement> {
+    @JvmOverloads
+    fun settlements(startDate: LocalDate, endDate: LocalDate = LocalDate.now()): List<Settlement> {
         return settlements(SettlementListForm(startDate, endDate))
-    }
-
-    fun settlements(startDate: LocalDate): List<Settlement> {
-        return settlements(startDate, LocalDate.now())
     }
 
     /***
@@ -222,12 +216,9 @@ class TossPaymentsService(
         return cashReceiptService.list(form)
     }
 
-    fun cashReceipts(requestDate: LocalDate): CashReceiptList {
+    @JvmOverloads
+    fun cashReceipts(requestDate: LocalDate = LocalDate.now()): CashReceiptList {
         return cashReceipts(CashReceiptListForm(requestDate))
-    }
-
-    fun cashReceipts(): CashReceiptList {
-        return cashReceipts(LocalDate.now())
     }
 
     // 서브몰
@@ -301,12 +292,9 @@ class TossPaymentsService(
      * @param endDate
      * @return
      */
-    fun submallSettlements(startDate: LocalDate, endDate: LocalDate): List<Payout> {
+    @JvmOverloads
+    fun submallSettlements(startDate: LocalDate, endDate: LocalDate = LocalDate.now()): List<Payout> {
         return submallService.settlements(startDate, endDate)
-    }
-
-    fun submallSettlements(startDate: LocalDate): List<Payout> {
-        return submallSettlements(startDate, LocalDate.now())
     }
 
     // 카드 혜택 조회
