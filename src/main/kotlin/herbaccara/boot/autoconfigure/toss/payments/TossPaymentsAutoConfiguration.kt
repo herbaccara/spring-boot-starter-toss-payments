@@ -1,11 +1,9 @@
 package herbaccara.boot.autoconfigure.toss.payments
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.toss.payments.TossPaymentsService
 import herbaccara.toss.payments.TossPaymentsWebhookController
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -17,7 +15,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.web.client.RestTemplate
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -37,27 +34,27 @@ class TossPaymentsAutoConfiguration {
         }
     }
 
-    @Bean("tossPaymentsObjectMapper")
-    fun objectMapper(properties: TossPaymentsProperties): ObjectMapper {
+    @Bean
+    @ConditionalOnMissingBean
+    fun objectMapper(): ObjectMapper {
         return jacksonObjectMapper().apply {
             findAndRegisterModules()
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, properties.failOnUnknownProperties)
         }
     }
 
-    @Bean("tossPaymentsRestTemplate")
-    fun restTemplate(
+    @Bean
+    fun tossPaymentsService(
+        objectMapper: ObjectMapper,
         properties: TossPaymentsProperties,
-        @Qualifier("tossPaymentsObjectMapper") objectMapper: ObjectMapper,
         customizers: List<TossPaymentsRestTemplateBuilderCustomizer>,
         interceptors: List<TossPaymentsClientHttpRequestInterceptor>
-    ): RestTemplate {
+    ): TossPaymentsService {
         if (properties.clientSecret.isEmpty()) throw NullPointerException()
 
         // 인증 : https://docs.tosspayments.com/guides/using-api/authorization#%EC%9D%B8%EC%A6%9D
         val authorization = Base64.getEncoder().encodeToString("${properties.clientSecret}:".toByteArray())
 
-        return RestTemplateBuilder()
+        val restTemplate = RestTemplateBuilder()
             .rootUri(properties.rootUri)
             .setReadTimeout(properties.readTimeout)
             .additionalInterceptors(
@@ -79,10 +76,7 @@ class TossPaymentsAutoConfiguration {
                 }
             }
             .build()
-    }
 
-    @Bean
-    fun tossPaymentsService(@Qualifier("tossPaymentsRestTemplate") restTemplate: RestTemplate): TossPaymentsService {
         return TossPaymentsService(restTemplate)
     }
 }

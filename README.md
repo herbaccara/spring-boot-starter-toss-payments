@@ -34,7 +34,6 @@ toss:
     enabled: true
     client-key: 클라이언트 키
     client-secret: 클라이언트 시크릿
-    fail-on-unknown-properties: true
     webhook:
       enabled: true
       path: /toss/payments/webhook

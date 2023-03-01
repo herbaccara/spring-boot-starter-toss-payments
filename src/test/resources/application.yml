@@ -3,7 +3,6 @@ toss:
     enabled: true
     client-key: test_ck_LBa5PzR0Arnd2EYbgJo3vmYnNeDM
     client-secret: test_sk_O6BYq7GWPVvWanQ0gY4rNE5vbo1d
-    fail-on-unknown-properties: true
     webhook:
       enabled: true
       path: /toss/payments/webhook
