@@ -28,7 +28,7 @@ class TossPaymentsAutoConfiguration {
     class TossPaymentsWebMvcConfigurer {
 
         @Bean
-        @ConditionalOnMissingBean(TossPaymentsWebhookController::class)
+        @ConditionalOnMissingBean
         fun tossPaymentsWebhookController(applicationEventPublisher: ApplicationEventPublisher): TossPaymentsWebhookController {
             return TossPaymentsWebhookController(applicationEventPublisher)
         }

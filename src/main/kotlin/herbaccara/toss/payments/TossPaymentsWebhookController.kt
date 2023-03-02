@@ -7,6 +7,7 @@ import herbaccara.toss.payments.model.webhook.Event.*
 import herbaccara.toss.payments.model.webhook.PaymentStatusChanged
 import herbaccara.toss.payments.model.webhook.PayoutStatusChanged
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -22,7 +23,7 @@ class TossPaymentsWebhookController(
      * [deposit_callback](https://docs.tosspayments.com/guides/webhook#deposit_callback)
      */
     @RequestMapping("/deposit-callback")
-    fun onDepositCallback(depositCallback: DepositCallback) {
+    fun onDepositCallback(@RequestBody depositCallback: DepositCallback) {
         applicationEventPublisher.publishEvent(depositCallback)
     }
 
@@ -31,7 +32,7 @@ class TossPaymentsWebhookController(
      * [...](https://docs.tosspayments.com/guides/webhook#payment_status_changed)
      */
     @RequestMapping("/payment-status-changed")
-    fun onPaymentStatusChanged(paymentStatusChangedEvent: Event<PaymentStatusChanged>) {
+    fun onPaymentStatusChanged(@RequestBody paymentStatusChangedEvent: Event<PaymentStatusChanged>) {
         applicationEventPublisher.publishEvent(paymentStatusChangedEvent)
     }
 
@@ -40,7 +41,7 @@ class TossPaymentsWebhookController(
      * [...](https://docs.tosspayments.com/guides/webhook#payout_status_changed)
      */
     @RequestMapping("/payout-status-changed")
-    fun onPayoutStatusChanged(payoutStatusChangedEvent: Event<PayoutStatusChanged>) {
+    fun onPayoutStatusChanged(@RequestBody payoutStatusChangedEvent: Event<PayoutStatusChanged>) {
         applicationEventPublisher.publishEvent(payoutStatusChangedEvent)
     }
 
@@ -49,7 +50,7 @@ class TossPaymentsWebhookController(
      * [...](https://docs.tosspayments.com/guides/webhook#method_updated)
      */
     @RequestMapping("/method-updated")
-    fun onMethodUpdated(methodUpdatedEvent: Event<MethodUpdated>) {
+    fun onMethodUpdated(@RequestBody methodUpdatedEvent: Event<MethodUpdated>) {
         applicationEventPublisher.publishEvent(methodUpdatedEvent)
     }
 
@@ -58,7 +59,7 @@ class TossPaymentsWebhookController(
      * [...](https://docs.tosspayments.com/guides/webhook#customer_status_changed)
      */
     @RequestMapping("/customer-status-changed")
-    fun onCustomerStatusChanged(customerStatusChangedEvent: Event<CustomerStatusChanged>) {
+    fun onCustomerStatusChanged(@RequestBody customerStatusChangedEvent: Event<CustomerStatusChanged>) {
         applicationEventPublisher.publishEvent(customerStatusChangedEvent)
     }
 }
