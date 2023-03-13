@@ -9,6 +9,7 @@ import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
 import herbaccara.toss.payments.form.brandpay.BrandPayAuthorizationAccessTokenForm
+import herbaccara.toss.payments.form.brandpay.BrandPayPaymentConfirmForm
 import herbaccara.toss.payments.form.brandpay.BrandPayTermAgreeForm
 import herbaccara.toss.payments.form.brandpay.GrantType
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptListForm
@@ -539,6 +540,24 @@ class TossPaymentsService @JvmOverloads constructor(
 
         val uri = "/v1/brandpay/payments/methods/account/remove"
         return restTemplate.exchange<BrandPayBankAccount>(uri, HttpMethod.POST, httpEntity).body!!
+    }
+
+    fun brandPayPaymentConfirm(form: BrandPayPaymentConfirmForm): Payment {
+        val uri = "/v1/brandpay/payments/confirm"
+        return postForObject(uri, form, Payment::class.java)
+    }
+
+    // TODO: 자동 결제 실행
+
+    fun brandPayCustomerRemove(accessToken: String): Boolean {
+        val headers = HttpHeaders().apply {
+            setBearerAuth(accessToken)
+        }
+        val httpEntity = HttpEntity<Any>(headers)
+
+        val uri = "/v1/brandpay/customers/remove"
+        val json = restTemplate.exchange<JsonNode>(uri, HttpMethod.POST, httpEntity).body!!
+        return json["success"].asBoolean()
     }
 
     fun brandPayCardPromotion(): BrandPayCardPromotion {
