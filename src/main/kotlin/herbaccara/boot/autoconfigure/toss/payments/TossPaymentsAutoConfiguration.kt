@@ -51,17 +51,14 @@ class TossPaymentsAutoConfiguration {
     ): TossPaymentsService {
         if (properties.clientSecret.isEmpty()) throw NullPointerException()
 
-        // 인증 : https://docs.tosspayments.com/guides/using-api/authorization#%EC%9D%B8%EC%A6%9D
-        val authorization = Base64.getEncoder().encodeToString("${properties.clientSecret}:".toByteArray())
-
         val restTemplate = RestTemplateBuilder()
             .rootUri(properties.rootUri)
             .setReadTimeout(properties.readTimeout)
             .additionalInterceptors(
                 ClientHttpRequestInterceptor { request, body, execution ->
-                    val headers = request.headers
-                    headers.contentType = MediaType.APPLICATION_JSON
-                    headers.setBasicAuth(authorization)
+                    request.headers.apply {
+                        contentType = MediaType.APPLICATION_JSON
+                    }
                     execution.execute(request, body)
                 }
             )
@@ -77,6 +74,6 @@ class TossPaymentsAutoConfiguration {
             }
             .build()
 
-        return TossPaymentsService(restTemplate)
+        return TossPaymentsService(restTemplate, properties.clientSecret)
     }
 }

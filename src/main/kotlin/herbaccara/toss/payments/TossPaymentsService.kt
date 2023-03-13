@@ -1,5 +1,6 @@
 package herbaccara.toss.payments
 
+import com.fasterxml.jackson.databind.JsonNode
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
@@ -24,13 +25,23 @@ import herbaccara.toss.payments.model.settlement.Settlement
 import herbaccara.toss.payments.model.submall.Payout
 import herbaccara.toss.payments.model.submall.Submall
 import herbaccara.toss.payments.model.transaction.Transaction
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
 import org.springframework.web.client.getForObject
+import org.springframework.web.client.postForObject
+import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class TossPaymentsService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val clientSecret: String
 ) {
     companion object {
         /***
@@ -39,13 +50,26 @@ class TossPaymentsService(
         const val API_VERSION = "2022-11-16"
     }
 
-    private val paymentService = PaymentService(restTemplate)
-    private val billingService = BillingService(restTemplate)
-    private val transactionService = TransactionService(restTemplate)
-    private val settlementService = SettlementService(restTemplate)
-    private val cashReceiptService = CashReceiptService(restTemplate)
-    private val submallService = SubmallService(restTemplate)
-    private val brandPayService = BrandPayService(restTemplate)
+    // 인증 : https://docs.tosspayments.com/guides/using-api/authorization#%EC%9D%B8%EC%A6%9D
+    private val authorization by lazy { Base64.getEncoder().encodeToString("$clientSecret:".toByteArray()) }
+
+    private fun <T> getForObject(uri: String, clazz: Class<T>): T {
+        val headers = HttpHeaders().apply {
+            setBasicAuth(authorization)
+        }
+        val httpEntity = HttpEntity<Any>(headers)
+        val exchange = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, clazz)
+        return exchange.body!!
+    }
+
+    private fun <R, T> postForObject(uri: String, form: R, clazz: Class<T>): T {
+        val headers = HttpHeaders().apply {
+            setBasicAuth(authorization)
+        }
+        val httpEntity = HttpEntity<R>(form, headers)
+        val exchange = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, clazz)
+        return exchange.body!!
+    }
 
     // 결제
 
@@ -59,7 +83,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentCreate(form: PaymentCreateForm): Payment {
-        return paymentService.create(form)
+        val uri = "/v1/payments"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     /***
@@ -68,7 +93,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentConfirm(form: PaymentConfirmForm): Payment {
-        return paymentService.confirm(form)
+        val uri = "/v1/payments/confirm"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     /***
@@ -77,7 +103,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentByPaymentKey(paymentKey: String): Payment {
-        return paymentService.paymentByPaymentKey(paymentKey)
+        val uri = "/v1/payments/$paymentKey"
+        return getForObject(uri, Payment::class.java)
     }
 
     /***
@@ -86,7 +113,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentByOrderId(orderId: String): Payment {
-        return paymentService.paymentByOrderId(orderId)
+        val uri = "/v1/payments/orders/$orderId"
+        return getForObject(uri, Payment::class.java)
     }
 
     /***
@@ -96,7 +124,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentCancel(paymentKey: String, form: PaymentCancelForm): Payment {
-        return paymentService.cancel(paymentKey, form)
+        val uri = "/v1/payments/$paymentKey/cancel"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     fun paymentCancel(paymentKey: String, cancelReason: String): Payment {
@@ -109,7 +138,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentKeyIn(form: PaymentKeyInForm): Payment {
-        return paymentService.keyIn(form)
+        val uri = "/v1/payments/key-in"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     /***
@@ -118,7 +148,8 @@ class TossPaymentsService(
      * @return
      */
     fun paymentVirtualAccount(form: PaymentVirtualAccountForm): Payment {
-        return paymentService.virtualAccount(form)
+        val uri = "/v1/virtual-accounts"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     // 빌링
@@ -129,7 +160,8 @@ class TossPaymentsService(
      * @return
      */
     fun billingAuthorizationCard(form: BillingAuthorizationCardForm): Billing {
-        return billingService.authorizationCard(form)
+        val uri = "/v1/billing/authorizations/card"
+        return postForObject(uri, form, Billing::class.java)
     }
 
     /***
@@ -138,7 +170,8 @@ class TossPaymentsService(
      * @return
      */
     fun billingAuthorizationIssue(form: BillingAuthorizationIssueForm): Billing {
-        return billingService.authorizationIssue(form)
+        val uri = "/v1/billing/authorizations/issue"
+        return postForObject(uri, form, Billing::class.java)
     }
 
     /***
@@ -148,7 +181,8 @@ class TossPaymentsService(
      * @return
      */
     fun billingApprove(billingKey: String, form: BillingApproveForm): Payment {
-        return billingService.approve(billingKey, form)
+        val uri = "/v1/billing/$billingKey"
+        return postForObject(uri, form, Payment::class.java)
     }
 
     // 거래 내역
@@ -159,7 +193,25 @@ class TossPaymentsService(
      * @return
      */
     fun transactions(form: TransactionListForm): List<Transaction> {
-        return transactionService.list(form)
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+        val params = LinkedMultiValueMap<String, String>().apply {
+            add("startDate", dateTimeFormatter.format(form.startDate))
+            add("endDate", dateTimeFormatter.format(form.endDate))
+            if (form.startingAfter != null) {
+                add("startingAfter", form.startingAfter)
+            }
+            if (form.limit != null) {
+                add("limit", form.limit.toString())
+            }
+        }
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/transactions")
+            .queryParams(params)
+            .toUriString()
+
+        return getForObject(uri, Array<Transaction>::class.java).toList()
     }
 
     @JvmOverloads
@@ -175,7 +227,28 @@ class TossPaymentsService(
      * @return
      */
     fun settlements(form: SettlementListForm): List<Settlement> {
-        return settlementService.list(form)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val params = LinkedMultiValueMap<String, String>().apply {
+            add("startDate", dateFormatter.format(form.startDate))
+            add("endDate", dateFormatter.format(form.endDate))
+            if (form.dateType != null) {
+                add("dateType", form.dateType.toString())
+            }
+            if (form.page != null) {
+                add("page", form.page.toString())
+            }
+            if (form.size != null) {
+                add("size", form.size.toString())
+            }
+        }
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/settlements")
+            .queryParams(params)
+            .toUriString()
+
+        return getForObject(uri, Array<Settlement>::class.java).toList()
     }
 
     @JvmOverloads
@@ -189,7 +262,10 @@ class TossPaymentsService(
      * @return
      */
     fun settlementRequest(paymentKey: String): Boolean {
-        return settlementService.request(paymentKey)
+        val uri = "/v1/settlements"
+        val form = mapOf("paymentKey" to paymentKey)
+        val jsonNode: JsonNode = postForObject(uri, form, JsonNode::class.java)
+        return jsonNode["result"].asBoolean()
     }
 
     // 현금영수증
@@ -200,7 +276,8 @@ class TossPaymentsService(
      * @return
      */
     fun cashReceiptRequest(form: CashReceiptRequestForm): CashReceipt {
-        return cashReceiptService.request(form)
+        val uri = "/v1/cash-receipt"
+        return postForObject(uri, form, CashReceipt::class.java)
     }
 
     /***
@@ -209,7 +286,8 @@ class TossPaymentsService(
      * @return
      */
     fun cashReceiptCancel(receiptKey: String): CashReceipt {
-        return cashReceiptService.cancel(receiptKey)
+        val uri = "/v1/cash-receipts/$receiptKey/cancel"
+        return postForObject(uri, null, CashReceipt::class.java)
     }
 
     /***
@@ -218,7 +296,24 @@ class TossPaymentsService(
      * @return
      */
     fun cashReceipts(form: CashReceiptListForm): CashReceiptList {
-        return cashReceiptService.list(form)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val params = LinkedMultiValueMap<String, String>().apply {
+            add("requestDate", dateFormatter.format(form.requestDate))
+            if (form.cursor != null) {
+                add("cursor", form.cursor.toString())
+            }
+            if (form.limit != null) {
+                add("limit", form.limit.toString())
+            }
+        }
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/cash-receipts")
+            .queryParams(params)
+            .toUriString()
+
+        return getForObject(uri, CashReceiptList::class.java)
     }
 
     @JvmOverloads
@@ -234,7 +329,8 @@ class TossPaymentsService(
      * @return
      */
     fun submallCreate(form: SubmallCreateForm): Submall {
-        return submallService.create(form)
+        val uri = "/v1/payouts/sub-malls"
+        return postForObject(uri, form, Submall::class.java)
     }
 
     /***
@@ -242,7 +338,8 @@ class TossPaymentsService(
      * @return
      */
     fun submalls(): List<Submall> {
-        return submallService.list()
+        val uri = "/v1/payouts/sub-malls"
+        return getForObject(uri, Array<Submall>::class.java).toList()
     }
 
     /***
@@ -251,7 +348,8 @@ class TossPaymentsService(
      * @return
      */
     fun submallUpdate(subMallId: String, form: SubmallUpdateForm): Submall {
-        return submallService.update(subMallId, form)
+        val uri = "/v1/payouts/sub-malls/$subMallId"
+        return postForObject(uri, form, Submall::class.java)
     }
 
     /***
@@ -260,7 +358,8 @@ class TossPaymentsService(
      * @return
      */
     fun submallDelete(subMallId: String): String {
-        return submallService.delete(subMallId)
+        val uri = "/v1/payouts/sub-malls/$subMallId/delete"
+        return postForObject(uri, null, String::class.java)
     }
 
     // 서브몰 지급대행
@@ -270,7 +369,9 @@ class TossPaymentsService(
      * @return
      */
     fun submallSettlementBalance(): Long {
-        return submallService.settlementBalance()
+        val uri = "/v1/payouts/sub-malls/settlements/balance"
+        val json: JsonNode = getForObject(uri, JsonNode::class.java)
+        return json["balance"].asLong()
     }
 
     /***
@@ -279,7 +380,8 @@ class TossPaymentsService(
      * @return
      */
     fun submallSettlementCreate(vararg form: SubMallSettlementCreateForm): List<Payout> {
-        return submallService.settlementCreate(*form)
+        val uri = "/v1/payouts/sub-malls/settlements"
+        return postForObject(uri, form, Array<Payout>::class.java).toList()
     }
 
     /***
@@ -288,7 +390,8 @@ class TossPaymentsService(
      * @return
      */
     fun submallSettlement(payoutKey: String): Payout {
-        return submallService.settlement(payoutKey)
+        val uri = "/v1/payouts/sub-malls/settlements/$payoutKey"
+        return getForObject(uri, Payout::class.java)
     }
 
     /***
@@ -299,7 +402,19 @@ class TossPaymentsService(
      */
     @JvmOverloads
     fun submallSettlements(startDate: LocalDate, endDate: LocalDate = LocalDate.now()): List<Payout> {
-        return submallService.settlements(startDate, endDate)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val params = LinkedMultiValueMap<String, String>().apply {
+            add("startDate", dateFormatter.format(startDate))
+            add("endDate", dateFormatter.format(endDate))
+        }
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/payouts/sub-malls/settlements")
+            .queryParams(params)
+            .toUriString()
+
+        return getForObject(uri, Array<Payout>::class.java).toList()
     }
 
     // 카드 혜택 조회
@@ -311,13 +426,14 @@ class TossPaymentsService(
      */
     fun cardPromotion(): CardPromotion {
         val uri = "/v1/promotions/card"
-        return restTemplate.getForObject(uri)
+        return getForObject(uri, CardPromotion::class.java)
     }
 
     // 브랜드 페이
 
     fun brandPayTerms(customerKey: String, vararg scopes: Scope): List<Term> {
-        return brandPayService.terms(customerKey, scopes.toList())
+        val uri = "/v1/brandpay/terms?customerKey=$customerKey&${scopes.joinToString("&") { "&scope=$it" }}"
+        return getForObject(uri, Array<Term>::class.java).toList()
     }
 
     fun brandPayTermAgree(customerKey: String, scope: List<Scope>, termsId: List<Int>): String {
@@ -325,7 +441,9 @@ class TossPaymentsService(
     }
 
     fun brandPayTermAgree(form: BrandPayTermAgreeForm): String {
-        return brandPayService.termAgree(form)
+        val uri = "/v1/brandpay/terms/agree"
+        val json = postForObject(uri, form, JsonNode::class.java)
+        return json["code"].asText()
     }
 
     fun brandPayAuthorizationAccessToken(customerKey: String, grantType: GrantType, code: String): Token {
@@ -339,19 +457,27 @@ class TossPaymentsService(
     }
 
     fun brandPayAuthorizationAccessToken(form: BrandPayAuthorizationAccessTokenForm): Token {
-        return brandPayService.authorizationAccessToken(form)
+        val uri = "/v1/brandpay/authorizations/access-token"
+        return postForObject(uri, form, Token::class.java)
     }
 
-    // FIXME : 토큰 스토리지 처리
     fun brandPayPaymentMethodsByAccessToken(accessToken: String): BrandPayMethod {
-        return brandPayService.paymentMethodsByAccessToken(accessToken)
+        val headers = HttpHeaders().apply {
+            setBearerAuth(accessToken)
+        }
+        val httpEntity = HttpEntity<Any>(headers)
+
+        val uri = "/v1/brandpay/payments/methods"
+        return restTemplate.exchange<BrandPayMethod>(uri, HttpMethod.GET, httpEntity).body!!
     }
 
     fun brandPayPaymentMethodsBySecretKey(customerKey: String): BrandPayMethod {
-        return brandPayService.paymentMethodsBySecretKey(customerKey)
+        val uri = "/v1/brandpay/payments/methods/$customerKey"
+        return getForObject(uri, BrandPayMethod::class.java)
     }
 
     fun brandPayCardPromotion(): BrandPayCardPromotion {
-        return brandPayService.cardPromotion()
+        val uri = "/v1/brandpay/promotions/card"
+        return getForObject(uri, BrandPayCardPromotion::class.java)
     }
 }
