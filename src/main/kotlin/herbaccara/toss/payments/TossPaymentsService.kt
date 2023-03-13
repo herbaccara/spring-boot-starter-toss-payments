@@ -503,7 +503,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Token::class.java)
     }
 
-    fun brandPayPaymentMethodsByAccessToken(accessToken: String): BrandPayMethod {
+    fun brandPayPaymentMethodsUsingAccessToken(accessToken: String): BrandPayMethod {
         val headers = HttpHeaders().apply {
             setBearerAuth(accessToken)
         }
@@ -513,7 +513,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return restTemplate.exchange<BrandPayMethod>(uri, HttpMethod.GET, httpEntity).body!!
     }
 
-    fun brandPayPaymentMethodsBySecretKey(customerKey: String): BrandPayMethod {
+    fun brandPayPaymentMethodsUsingSecretKey(customerKey: String): BrandPayMethod {
         val uri = "/v1/brandpay/payments/methods/$customerKey"
         return getForObject(uri, BrandPayMethod::class.java)
     }

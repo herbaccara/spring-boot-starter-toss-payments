@@ -275,14 +275,14 @@ class TossPaymentsServiceTest {
     @Test
     fun brandPayPaymentMethodsByAccessToken() {
         val accessToken = "G45eDbZnodP9BRQmyarYPZ4aLWJkMZVJ07KzLNkE6AOMwXYW"
-        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsByAccessToken(accessToken)
+        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsUsingAccessToken(accessToken)
         println()
     }
 
     @Test
     fun brandPayPaymentMethodsBySecretKey() {
         val customerKey = "c6thB674j9vCU4XsvcPk"
-        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsBySecretKey(customerKey)
+        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsUsingSecretKey(customerKey)
         println()
     }
 
