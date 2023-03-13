@@ -517,6 +517,30 @@ class TossPaymentsService @JvmOverloads constructor(
         return getForObject(uri, BrandPayMethod::class.java)
     }
 
+    fun brandPayCardRemove(accessToken: String, methodKey: String): BrandPayCard {
+        val form = mapOf("methodKey" to methodKey)
+
+        val headers = HttpHeaders().apply {
+            setBearerAuth(accessToken)
+        }
+        val httpEntity = HttpEntity<Map<String, String>>(form, headers)
+
+        val uri = "/v1/brandpay/payments/methods/card/remove"
+        return restTemplate.exchange<BrandPayCard>(uri, HttpMethod.POST, httpEntity).body!!
+    }
+
+    fun brandPayAccountRemove(accessToken: String, methodKey: String): BrandPayBankAccount {
+        val form = mapOf("methodKey" to methodKey)
+
+        val headers = HttpHeaders().apply {
+            setBearerAuth(accessToken)
+        }
+        val httpEntity = HttpEntity<Map<String, String>>(form, headers)
+
+        val uri = "/v1/brandpay/payments/methods/account/remove"
+        return restTemplate.exchange<BrandPayBankAccount>(uri, HttpMethod.POST, httpEntity).body!!
+    }
+
     fun brandPayCardPromotion(): BrandPayCardPromotion {
         val uri = "/v1/brandpay/promotions/card"
         return getForObject(uri, BrandPayCardPromotion::class.java)
