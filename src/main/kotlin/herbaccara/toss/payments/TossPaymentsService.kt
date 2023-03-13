@@ -1,6 +1,10 @@
 package herbaccara.toss.payments
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsClientHttpRequestInterceptor
+import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuilderCustomizer
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
@@ -25,33 +29,70 @@ import herbaccara.toss.payments.model.settlement.Settlement
 import herbaccara.toss.payments.model.submall.Payout
 import herbaccara.toss.payments.model.submall.Submall
 import herbaccara.toss.payments.model.transaction.Transaction
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.http.client.ClientHttpRequestInterceptor
+import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
-import org.springframework.web.client.getForObject
-import org.springframework.web.client.postForObject
 import org.springframework.web.util.UriComponentsBuilder
+import java.nio.charset.StandardCharsets
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TossPaymentsService(
-    private val restTemplate: RestTemplate,
-    private val clientSecret: String
+class TossPaymentsService @JvmOverloads constructor(
+    private val clientSecret: String,
+    baseUrl: String = BASE_URL,
+    timeout: Duration = DEFAULT_TIMEOUT,
+    customizers: List<TossPaymentsRestTemplateBuilderCustomizer> = emptyList(),
+    interceptors: List<TossPaymentsClientHttpRequestInterceptor> = emptyList()
 ) {
     companion object {
         /***
          * [2022-11-16](https://docs.tosspayments.com/reference/release-note#2022-11-16)
          */
         const val API_VERSION = "2022-11-16"
+        const val BASE_URL: String = "https://api.tosspayments.com"
+        val DEFAULT_TIMEOUT: Duration = Duration.ofSeconds(60)
     }
 
+    private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+        findAndRegisterModules()
+    }
+
+    private val restTemplate: RestTemplate = RestTemplateBuilder()
+        .rootUri(baseUrl)
+        .setReadTimeout(timeout)
+        .additionalInterceptors(
+            ClientHttpRequestInterceptor { request, body, execution ->
+                request.headers.apply {
+                    contentType = MediaType.APPLICATION_JSON
+                }
+                execution.execute(request, body)
+            }
+        )
+        .additionalInterceptors(*interceptors.toTypedArray())
+        .messageConverters(
+            StringHttpMessageConverter(StandardCharsets.UTF_8),
+            MappingJackson2HttpMessageConverter(objectMapper)
+        )
+        .also { builder ->
+            for (customizer in customizers) {
+                customizer.customize(builder)
+            }
+        }
+        .build()
+
     // 인증 : https://docs.tosspayments.com/guides/using-api/authorization#%EC%9D%B8%EC%A6%9D
-    private val authorization by lazy { Base64.getEncoder().encodeToString("$clientSecret:".toByteArray()) }
+    private val authorization: String by lazy { Base64.getEncoder().encodeToString("$clientSecret:".toByteArray()) }
 
     private fun <T> getForObject(uri: String, clazz: Class<T>): T {
         val headers = HttpHeaders().apply {

@@ -1,6 +1,6 @@
 package herbaccara.toss.payments
 
-import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsProperties
+import herbaccara.toss.payments.TossPaymentsWebhookController.Companion.DEFAULT_WEBHOOK_PATH
 import herbaccara.toss.payments.model.webhook.DepositCallback
 import herbaccara.toss.payments.model.webhook.Event
 import herbaccara.toss.payments.model.webhook.Event.*
@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("\${toss.payments.webhook.path:${TossPaymentsProperties.DEFAULT_WEBHOOK_PATH}}")
+@RequestMapping("\${toss.payments.webhook.path:$DEFAULT_WEBHOOK_PATH}")
 class TossPaymentsWebhookController(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
+    companion object {
+        const val DEFAULT_WEBHOOK_PATH = "/toss/payments/webhook"
+        val DEFAULT_ALLOW_IPS = listOf("13.124.18.147", "13.124.108.35", "3.36.173.151", "3.38.81.32")
+    }
     // TODO : 허용 IP 필터링 처리
 
     /***
