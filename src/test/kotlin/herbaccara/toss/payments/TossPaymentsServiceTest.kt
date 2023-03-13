@@ -7,12 +7,15 @@ import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsClientHt
 import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsRestTemplateBuilderCustomizer
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
+import herbaccara.toss.payments.form.brandpay.BrandPayTermAgreeForm
+import herbaccara.toss.payments.form.brandpay.GrantType
 import herbaccara.toss.payments.form.payment.Method
 import herbaccara.toss.payments.form.payment.PaymentCreateForm
 import herbaccara.toss.payments.form.payment.PaymentKeyInForm
 import herbaccara.toss.payments.form.submall.Account
 import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
+import herbaccara.toss.payments.model.brandpay.Scope
 import herbaccara.toss.payments.model.submall.Type
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -237,6 +240,57 @@ class TossPaymentsServiceTest {
     @Test
     fun transactions() {
         val transactions = tossPaymentsService.transactions(LocalDateTime.now().minusDays(7))
+        println()
+    }
+
+    @Test
+    fun brandPayTerms() {
+        val brandPayTerms = tossPaymentsService.brandPayTerms("c6thB674j9vCU4XsvcPk", Scope.REGISTER, Scope.ACCOUNT)
+        println()
+    }
+
+    @Test
+    fun brandPayTermAgree() {
+        val customerKey = "c6thB674j9vCU4XsvcPk"
+        val scopes = listOf(Scope.REGISTER, Scope.ACCOUNT)
+        val terms = tossPaymentsService.brandPayTerms(customerKey, *scopes.toTypedArray())
+        val code =
+            tossPaymentsService.brandPayTermAgree(BrandPayTermAgreeForm(customerKey, scopes, terms.map { it.id }))
+        println(code) // Yq7GWPVvPKpyQkg7JL8NE5vb
+    }
+
+    @Test
+    fun brandPayAuthorizationAccessToken() {
+        val customerKey = "c6thB674j9vCU4XsvcPk"
+        val scopes = listOf(Scope.REGISTER, Scope.ACCOUNT)
+        val terms = tossPaymentsService.brandPayTerms(customerKey, *scopes.toTypedArray())
+        val code =
+            tossPaymentsService.brandPayTermAgree(BrandPayTermAgreeForm(customerKey, scopes, terms.map { it.id }))
+
+        val brandPayAuthorizationAccessToken =
+            tossPaymentsService.brandPayAuthorizationAccessToken(customerKey, GrantType.AuthorizationCode, code)
+        println(brandPayAuthorizationAccessToken)
+    }
+
+    @Test
+    fun brandPayPaymentMethodsByAccessToken() {
+        val accessToken = "G45eDbZnodP9BRQmyarYPZ4aLWJkMZVJ07KzLNkE6AOMwXYW"
+        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsByAccessToken(accessToken)
+        println()
+    }
+
+    @Test
+    fun brandPayPaymentMethodsBySecretKey() {
+        val customerKey = "c6thB674j9vCU4XsvcPk"
+        val brandPayPaymentMethods = tossPaymentsService.brandPayPaymentMethodsBySecretKey(customerKey)
+        println()
+    }
+
+    // TODO : 카드 삭제 수단 부터
+
+    @Test
+    fun brandPayCardPromotion() {
+        val brandPayCardPromotion = tossPaymentsService.brandPayCardPromotion()
         println()
     }
 }

@@ -3,6 +3,9 @@ package herbaccara.toss.payments
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
+import herbaccara.toss.payments.form.brandpay.BrandPayAuthorizationAccessTokenForm
+import herbaccara.toss.payments.form.brandpay.BrandPayTermAgreeForm
+import herbaccara.toss.payments.form.brandpay.GrantType
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptListForm
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptRequestForm
 import herbaccara.toss.payments.form.payment.*
@@ -12,6 +15,7 @@ import herbaccara.toss.payments.form.submall.SubmallCreateForm
 import herbaccara.toss.payments.form.submall.SubmallUpdateForm
 import herbaccara.toss.payments.form.transaction.TransactionListForm
 import herbaccara.toss.payments.model.billing.Billing
+import herbaccara.toss.payments.model.brandpay.*
 import herbaccara.toss.payments.model.cardpromotion.CardPromotion
 import herbaccara.toss.payments.model.cashreceipt.CashReceipt
 import herbaccara.toss.payments.model.cashreceipt.CashReceiptList
@@ -41,6 +45,7 @@ class TossPaymentsService(
     private val settlementService = SettlementService(restTemplate)
     private val cashReceiptService = CashReceiptService(restTemplate)
     private val submallService = SubmallService(restTemplate)
+    private val brandPayService = BrandPayService(restTemplate)
 
     // 결제
 
@@ -307,5 +312,46 @@ class TossPaymentsService(
     fun cardPromotion(): CardPromotion {
         val uri = "/v1/promotions/card"
         return restTemplate.getForObject(uri)
+    }
+
+    // 브랜드 페이
+
+    fun brandPayTerms(customerKey: String, vararg scopes: Scope): List<Term> {
+        return brandPayService.terms(customerKey, scopes.toList())
+    }
+
+    fun brandPayTermAgree(customerKey: String, scope: List<Scope>, termsId: List<Int>): String {
+        return brandPayTermAgree(BrandPayTermAgreeForm(customerKey, scope, termsId))
+    }
+
+    fun brandPayTermAgree(form: BrandPayTermAgreeForm): String {
+        return brandPayService.termAgree(form)
+    }
+
+    fun brandPayAuthorizationAccessToken(customerKey: String, grantType: GrantType, code: String): Token {
+        return brandPayAuthorizationAccessToken(
+            BrandPayAuthorizationAccessTokenForm(
+                customerKey,
+                grantType,
+                code
+            )
+        )
+    }
+
+    fun brandPayAuthorizationAccessToken(form: BrandPayAuthorizationAccessTokenForm): Token {
+        return brandPayService.authorizationAccessToken(form)
+    }
+
+    // FIXME : 토큰 스토리지 처리
+    fun brandPayPaymentMethodsByAccessToken(accessToken: String): BrandPayMethod {
+        return brandPayService.paymentMethodsByAccessToken(accessToken)
+    }
+
+    fun brandPayPaymentMethodsBySecretKey(customerKey: String): BrandPayMethod {
+        return brandPayService.paymentMethodsBySecretKey(customerKey)
+    }
+
+    fun brandPayCardPromotion(): BrandPayCardPromotion {
+        return brandPayService.cardPromotion()
     }
 }

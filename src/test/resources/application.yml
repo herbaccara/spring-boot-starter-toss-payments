@@ -6,3 +6,7 @@ toss:
     webhook:
       enabled: true
       path: /toss/payments/webhook
+logging:
+  level:
+    root: info
+    org.springframework.web: debug
