@@ -1,4 +1,4 @@
-package herbaccara.toss.payments.model.webhook
+package herbaccara.toss.payments.model.callback
 
 data class OnFail(
     val code: String,
