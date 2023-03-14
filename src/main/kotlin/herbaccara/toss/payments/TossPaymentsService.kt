@@ -8,10 +8,7 @@ import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuild
 import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
-import herbaccara.toss.payments.form.brandpay.BrandPayAuthorizationAccessTokenForm
-import herbaccara.toss.payments.form.brandpay.BrandPayPaymentConfirmForm
-import herbaccara.toss.payments.form.brandpay.BrandPayTermAgreeForm
-import herbaccara.toss.payments.form.brandpay.GrantType
+import herbaccara.toss.payments.form.brandpay.*
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptListForm
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptRequestForm
 import herbaccara.toss.payments.form.payment.*
@@ -547,7 +544,10 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Payment::class.java)
     }
 
-    // TODO: 자동 결제 실행
+    fun brandPayPaymentCreate(form: BrandPayPaymentCreateForm): Payment {
+        val uri = "/v1/brandpay/payments"
+        return postForObject(uri, form, Payment::class.java)
+    }
 
     fun brandPayCustomerRemove(accessToken: String): Boolean {
         val headers = HttpHeaders().apply {
