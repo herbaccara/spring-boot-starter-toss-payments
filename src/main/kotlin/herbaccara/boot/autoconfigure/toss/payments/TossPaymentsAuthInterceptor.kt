@@ -11,4 +11,8 @@ open class TossPaymentsAuthInterceptor {
     fun postHandle(token: Token) {
         // nothing
     }
+
+    fun afterCompletion(e: Throwable?) {
+        // nothing
+    }
 }

@@ -28,30 +28,42 @@ class TossPaymentsAuthController(
         // customerKey 가 신규 일 때는 GrantType 을 AuthorizationCode 로, 아니면 RefreshToken 로 호출을 해야 한다.
         // customerKey 기준으로 customer 정보 관련 API 가 없기 때문에 신규 고객인지 아닌지를 직접 관리 해야 한다.
         // GrantType 를 RefreshToken 로 해서 호출 후 403 에러가 떨어지면 AuthorizationCode 로 재호출 처리...
+
         tossPaymentsAuthInterceptor.preHandle(code, customerKey)
 
-        val token = try {
-            tossPaymentsService.brandPayAuthorizationAccessToken(
-                customerKey,
-                GrantType.RefreshToken,
-                code
-            )
-        } catch (e: HttpClientErrorException.Forbidden) {
-            tossPaymentsService.brandPayAuthorizationAccessToken(
-                customerKey,
-                GrantType.AuthorizationCode,
-                code
-            )
+        val result = runCatching {
+            try {
+                tossPaymentsService.brandPayAuthorizationAccessToken(
+                    customerKey,
+                    GrantType.RefreshToken,
+                    code
+                )
+            } catch (e: HttpClientErrorException.Forbidden) {
+                tossPaymentsService.brandPayAuthorizationAccessToken(
+                    customerKey,
+                    GrantType.AuthorizationCode,
+                    code
+                )
+            }
         }
 
-        tossPaymentsAuthInterceptor.postHandle(token)
+        if (result.isSuccess) {
+            val token = result.getOrNull()!!
 
-        val (accessToken, refreshToken, tokenType, expiresIn) = token
+            tossPaymentsAuthInterceptor.postHandle(token)
+            tossPaymentsAuthInterceptor.afterCompletion(null)
 
-        return mapOf(
-            "accessToken" to accessToken,
-            "tokenType" to tokenType,
-            "expiresIn" to expiresIn
-        )
+            val (accessToken, refreshToken, tokenType, expiresIn) = token
+
+            return mapOf(
+                "accessToken" to accessToken,
+                "tokenType" to tokenType,
+                "expiresIn" to expiresIn
+            )
+        } else {
+            val throwable = result.exceptionOrNull()!!
+            tossPaymentsAuthInterceptor.afterCompletion(throwable)
+            throw throwable
+        }
     }
 }
