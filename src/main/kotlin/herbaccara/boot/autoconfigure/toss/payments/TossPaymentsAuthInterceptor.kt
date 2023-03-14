@@ -8,11 +8,11 @@ open class TossPaymentsAuthInterceptor {
         // nothing
     }
 
-    fun postHandle(token: Token) {
+    fun postHandle(code: String, customerKey: String, token: Token) {
         // nothing
     }
 
-    fun afterCompletion(e: Throwable?) {
+    fun afterCompletion(code: String, customerKey: String, token: Token?, e: Throwable?) {
         // nothing
     }
 }

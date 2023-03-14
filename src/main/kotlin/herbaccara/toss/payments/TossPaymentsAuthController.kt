@@ -50,8 +50,12 @@ class TossPaymentsAuthController(
         if (result.isSuccess) {
             val token = result.getOrNull()!!
 
-            tossPaymentsAuthInterceptor.postHandle(token)
-            tossPaymentsAuthInterceptor.afterCompletion(null)
+            try {
+                tossPaymentsAuthInterceptor.postHandle(code, customerKey, token)
+            } catch (_: Exception) {
+                // ignore
+            }
+            tossPaymentsAuthInterceptor.afterCompletion(code, customerKey, token, null)
 
             val (accessToken, refreshToken, tokenType, expiresIn) = token
 
@@ -62,7 +66,7 @@ class TossPaymentsAuthController(
             )
         } else {
             val throwable = result.exceptionOrNull()!!
-            tossPaymentsAuthInterceptor.afterCompletion(throwable)
+            tossPaymentsAuthInterceptor.afterCompletion(code, customerKey, null, throwable)
             throw throwable
         }
     }
