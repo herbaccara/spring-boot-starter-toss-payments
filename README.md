@@ -34,9 +34,13 @@ toss:
     enabled: true
     client-key: 클라이언트 키
     client-secret: 클라이언트 시크릿
+    fail-on-unknown-properties: false
     webhook:
       enabled: true
       path: /toss/payments/webhook
+    auth:
+      enabled: true
+      path: /toss/payments/auth
 ```
 
 ## 사용하기
@@ -141,4 +145,67 @@ abstract class AbstractTossPaymentsEventListener {
     abstract fun onCustomerStatusChanged(customerStatusChangedEvent: Event<CustomerStatusChanged>)
 }
 
+```
+
+## 브랜드 페이 인증 토큰 발급 Controller
+```kotlin
+@RestController
+@RequestMapping("\${toss.payments.auth.path:$DEFAULT_WEBHOOK_PATH}")
+class TossPaymentsAuthController(
+    private val tossPaymentsService: TossPaymentsService,
+    private val tossPaymentsAuthInterceptor: TossPaymentsAuthInterceptor
+) {
+    companion object {
+        const val DEFAULT_WEBHOOK_PATH = "/toss/payments/auth"
+    }
+
+    @GetMapping
+    fun auth(
+        @RequestParam("code") code: String,
+        @RequestParam("customerKey") customerKey: String
+    ): Map<String, Any> {
+        tossPaymentsAuthInterceptor.preHandle(code, customerKey)
+
+        val token = try {
+            tossPaymentsService.brandPayAuthorizationAccessToken(
+                customerKey,
+                GrantType.RefreshToken,
+                code
+            )
+        } catch (e: HttpClientErrorException.Forbidden) {
+            tossPaymentsService.brandPayAuthorizationAccessToken(
+                customerKey,
+                GrantType.AuthorizationCode,
+                code
+            )
+        }
+
+        tossPaymentsAuthInterceptor.postHandle(token)
+
+        val (accessToken, refreshToken, tokenType, expiresIn) = token
+
+        return mapOf(
+            "accessToken" to accessToken,
+            "tokenType" to tokenType,
+            "expiresIn" to expiresIn
+        )
+    }
+}
+```
+
+## 브랜드 페이 인증 토큰 발급 Interceptor
+
+TossPaymentsAuthInterceptor 을 상속받은 class 를 Bean 을 등록 할 수 있습니다.
+
+```kotlin
+open class TossPaymentsAuthInterceptor {
+
+    fun preHandle(code: String, customerKey: String) {
+        // nothing
+    }
+
+    fun postHandle(token: Token) {
+        // nothing
+    }
+}
 ```
