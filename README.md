@@ -180,7 +180,7 @@ class TossPaymentsAuthController(
             )
         }
 
-        tossPaymentsAuthInterceptor.postHandle(token)
+        tossPaymentsAuthInterceptor.postHandle(code, customerKey, token)
 
         val (accessToken, refreshToken, tokenType, expiresIn) = token
 
@@ -204,7 +204,11 @@ open class TossPaymentsAuthInterceptor {
         // nothing
     }
 
-    fun postHandle(token: Token) {
+    fun postHandle(code: String, customerKey: String, token: Token) {
+        // nothing
+    }
+
+    fun afterCompletion(code: String, customerKey: String, token: Token?, e: Throwable?) {
         // nothing
     }
 }
