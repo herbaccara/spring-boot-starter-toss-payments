@@ -41,6 +41,7 @@ class TossPaymentsAutoConfiguration {
             properties.clientSecret,
             properties.rootUri,
             properties.readTimeout,
+            properties.failOnUnknownProperties,
             customizers,
             interceptors
         )

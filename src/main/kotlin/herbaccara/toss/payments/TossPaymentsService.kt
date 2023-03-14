@@ -1,5 +1,6 @@
 package herbaccara.toss.payments
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -50,6 +51,7 @@ class TossPaymentsService @JvmOverloads constructor(
     private val clientSecret: String,
     baseUrl: String = BASE_URL,
     timeout: Duration = DEFAULT_TIMEOUT,
+    failOnUnknownProperties: Boolean = false,
     customizers: List<TossPaymentsRestTemplateBuilderCustomizer> = emptyList(),
     interceptors: List<TossPaymentsClientHttpRequestInterceptor> = emptyList()
 ) {
@@ -63,6 +65,7 @@ class TossPaymentsService @JvmOverloads constructor(
     }
 
     private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, failOnUnknownProperties)
         findAndRegisterModules()
     }
 

@@ -14,6 +14,7 @@ data class TossPaymentsProperties(
     val clientSecret: String,
     val rootUri: String = TossPaymentsService.BASE_URL,
     val readTimeout: Duration = TossPaymentsService.DEFAULT_TIMEOUT,
+    val failOnUnknownProperties: Boolean = false,
     val allowIps: List<String> = TossPaymentsWebhookController.DEFAULT_ALLOW_IPS,
     val webhook: Webhook = Webhook(true, TossPaymentsWebhookController.DEFAULT_WEBHOOK_PATH)
 ) {
