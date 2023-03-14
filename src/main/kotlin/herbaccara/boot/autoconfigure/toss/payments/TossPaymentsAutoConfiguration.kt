@@ -1,6 +1,6 @@
 package herbaccara.boot.autoconfigure.toss.payments
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import herbaccara.toss.payments.TossPaymentsAuthController
 import herbaccara.toss.payments.TossPaymentsService
 import herbaccara.toss.payments.TossPaymentsWebhookController
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -13,24 +13,40 @@ import java.util.*
 
 @AutoConfiguration
 @EnableConfigurationProperties(TossPaymentsProperties::class)
-@ConditionalOnProperty(prefix = "toss.payments", value = ["enabled"], havingValue = "true")
+@ConditionalOnProperty(prefix = "toss.payments", value = ["enabled"], havingValue = "true", matchIfMissing = true)
 class TossPaymentsAutoConfiguration {
 
     @AutoConfiguration
-    @ConditionalOnProperty(prefix = "toss.payments.webhook", value = ["enabled"], havingValue = "true")
     class TossPaymentsWebMvcConfigurer {
 
         @Bean
         @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "toss.payments.webhook", value = ["enabled"], havingValue = "true")
         fun tossPaymentsWebhookController(applicationEventPublisher: ApplicationEventPublisher): TossPaymentsWebhookController {
             return TossPaymentsWebhookController(applicationEventPublisher)
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true")
+        fun tossPaymentsAuthInterceptor(): TossPaymentsAuthInterceptor {
+            return TossPaymentsAuthInterceptor()
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true")
+        fun tossPaymentsAuthController(
+            tossPaymentsService: TossPaymentsService,
+            tossPaymentsAuthInterceptor: TossPaymentsAuthInterceptor
+        ): TossPaymentsAuthController {
+            return TossPaymentsAuthController(tossPaymentsService, tossPaymentsAuthInterceptor)
         }
     }
 
     @Bean
     @ConditionalOnMissingBean
     fun tossPaymentsService(
-        objectMapper: ObjectMapper,
         properties: TossPaymentsProperties,
         customizers: List<TossPaymentsRestTemplateBuilderCustomizer>,
         interceptors: List<TossPaymentsClientHttpRequestInterceptor>

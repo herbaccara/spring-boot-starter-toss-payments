@@ -1,5 +1,6 @@
 package herbaccara.boot.autoconfigure.toss.payments
 
+import herbaccara.toss.payments.TossPaymentsAuthController
 import herbaccara.toss.payments.TossPaymentsService
 import herbaccara.toss.payments.TossPaymentsWebhookController
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -16,7 +17,16 @@ data class TossPaymentsProperties(
     val readTimeout: Duration = TossPaymentsService.DEFAULT_TIMEOUT,
     val failOnUnknownProperties: Boolean = false,
     val allowIps: List<String> = TossPaymentsWebhookController.DEFAULT_ALLOW_IPS,
-    val webhook: Webhook = Webhook(true, TossPaymentsWebhookController.DEFAULT_WEBHOOK_PATH)
+    val webhook: Webhook = Webhook(),
+    val auth: Auth = Auth()
 ) {
-    data class Webhook(val enabled: Boolean, val path: String)
+    data class Webhook(
+        val enabled: Boolean = true,
+        val path: String = TossPaymentsWebhookController.DEFAULT_WEBHOOK_PATH
+    )
+
+    data class Auth(
+        val enabled: Boolean = true,
+        val path: String = TossPaymentsAuthController.DEFAULT_WEBHOOK_PATH
+    )
 }

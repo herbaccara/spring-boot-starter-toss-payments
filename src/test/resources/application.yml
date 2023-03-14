@@ -7,6 +7,9 @@ toss:
     webhook:
       enabled: true
       path: /toss/payments/webhook
+    auth:
+      enabled: true
+      path: /toss/payments/auth
 logging:
   level:
     root: info
