@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsClientHttpRequestInterceptor
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuilderCustomizer
-import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationIssueForm
+import herbaccara.toss.payments.form.billing.BillingConfirmForm
 import herbaccara.toss.payments.form.brandpay.*
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptListForm
 import herbaccara.toss.payments.form.cashreceipt.CashReceiptRequestForm
@@ -222,7 +222,7 @@ class TossPaymentsService @JvmOverloads constructor(
      * @param form
      * @return
      */
-    fun billingApprove(billingKey: String, form: BillingApproveForm): Payment {
+    fun billingConfirm(billingKey: String, form: BillingConfirmForm): Payment {
         val uri = "/v1/billing/$billingKey"
         return postForObject(uri, form, Payment::class.java)
     }

@@ -5,8 +5,8 @@ import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsClientHttpRequest
 import herbaccara.boot.autoconfigure.toss.payments.TossPaymentsRestTemplateBuilderCustomizer
 import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsClientHttpRequestInterceptor
 import herbaccara.toss.payments.TossPaymentsServiceTest.TestTossPaymentsRestTemplateBuilderCustomizer
-import herbaccara.toss.payments.form.billing.BillingApproveForm
 import herbaccara.toss.payments.form.billing.BillingAuthorizationCardForm
+import herbaccara.toss.payments.form.billing.BillingConfirmForm
 import herbaccara.toss.payments.form.brandpay.BrandPayTermAgreeForm
 import herbaccara.toss.payments.form.brandpay.GrantType
 import herbaccara.toss.payments.form.payment.Method
@@ -90,9 +90,9 @@ class TossPaymentsServiceTest {
         )
         println()
 
-        val payment = tossPaymentsService.billingApprove(
+        val payment = tossPaymentsService.billingConfirm(
             billing.billingKey,
-            BillingApproveForm(
+            BillingConfirmForm(
                 customerKey,
                 15000L,
                 orderId(),
