@@ -5,4 +5,4 @@ data class OnBrandPaySuccess(
     val orderId: String,
     val amount: Long,
     val methodId: String
-)
+) : Callback.Success

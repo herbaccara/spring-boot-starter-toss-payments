@@ -6,4 +6,4 @@ package herbaccara.toss.payments.model.callback
 data class OnBillingSuccess(
     val customerKey: String,
     val authKey: String
-)
+) : Callback.Success

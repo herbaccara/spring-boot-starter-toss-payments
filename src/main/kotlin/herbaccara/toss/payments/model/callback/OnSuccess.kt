@@ -4,4 +4,4 @@ data class OnSuccess(
     val paymentKey: String,
     val orderId: String,
     val amount: Long
-)
+) : Callback.Success
