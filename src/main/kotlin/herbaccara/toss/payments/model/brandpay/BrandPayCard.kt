@@ -1,5 +1,7 @@
 package herbaccara.toss.payments.model.brandpay
 
+import java.time.OffsetDateTime
+
 data class BrandPayCard(
     val id: String,
     val methodKey: String,
@@ -11,10 +13,13 @@ data class BrandPayCard(
     val ownerType: String,
     val cardType: String,
     val installmentMinimumAmount: Long,
-    val registeredAt: String,
+    val registeredAt: OffsetDateTime,
     val status: Status,
     val icon: String,
     val iconUrl: String,
     val cardImgUrl: String,
-    val color: Color
+    val color: Color,
+
+    // 매뉴얼에 없는 프로퍼티
+    val cardProductCode: String
 )
