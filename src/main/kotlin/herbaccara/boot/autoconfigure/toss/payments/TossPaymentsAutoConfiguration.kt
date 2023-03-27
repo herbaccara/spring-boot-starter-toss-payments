@@ -21,21 +21,21 @@ class TossPaymentsAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        @ConditionalOnProperty(prefix = "toss.payments.webhook", value = ["enabled"], havingValue = "true")
+        @ConditionalOnProperty(prefix = "toss.payments.webhook", value = ["enabled"], havingValue = "true", matchIfMissing = true)
         fun tossPaymentsWebhookController(applicationEventPublisher: ApplicationEventPublisher): TossPaymentsWebhookController {
             return TossPaymentsWebhookController(applicationEventPublisher)
         }
 
         @Bean
         @ConditionalOnMissingBean
-        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true")
+        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true", matchIfMissing = true)
         fun tossPaymentsAuthInterceptor(): TossPaymentsAuthInterceptor {
             return TossPaymentsAuthInterceptor()
         }
 
         @Bean
         @ConditionalOnMissingBean
-        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true")
+        @ConditionalOnProperty(prefix = "toss.payments.auth", value = ["enabled"], havingValue = "true", matchIfMissing = true)
         fun tossPaymentsAuthController(
             tossPaymentsService: TossPaymentsService,
             tossPaymentsAuthInterceptor: TossPaymentsAuthInterceptor
