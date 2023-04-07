@@ -78,7 +78,7 @@ webhook event 는 applicationEventPublisher 에 즉시 publishEvent 됩니다.
 class TossPaymentsWebhookController(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
-    /***
+    /**
      * 가상계좌 결제 상태를 알려주는 웹훅
      */
     @RequestMapping("/deposit-callback")
@@ -86,7 +86,7 @@ class TossPaymentsWebhookController(
         applicationEventPublisher.publishEvent(depositCallback)
     }
 
-    /***
+    /**
      * 카드, 계좌이체, 휴대폰, 상품권 결제 상태를 알려주는 웹훅입니다.
      */
     @RequestMapping("/payment-status-changed")
@@ -94,7 +94,7 @@ class TossPaymentsWebhookController(
         applicationEventPublisher.publishEvent(paymentStatusChangedEvent)
     }
 
-    /***
+    /**
      * 지급대행 요청 상태가 COMPLETED, FAILED로 변경되면 웹훅이 전송됩니다. 자세한 상태 설명은 status에서 확인하세요.
      */
     @RequestMapping("/payout-status-changed")
@@ -102,7 +102,7 @@ class TossPaymentsWebhookController(
         applicationEventPublisher.publishEvent(payoutStatusChangedEvent)
     }
 
-    /***
+    /**
      * 브랜드페이 고객의 결제 수단이 변경되면 웹훅이 전송됩니다.
      */
     @RequestMapping("/method-updated")
@@ -110,7 +110,7 @@ class TossPaymentsWebhookController(
         applicationEventPublisher.publishEvent(methodUpdatedEvent)
     }
 
-    /***
+    /**
      * 브랜드페이 고객의 상태가 변경되면 웹훅이 전송됩니다.
      */
     @RequestMapping("/customer-status-changed")
