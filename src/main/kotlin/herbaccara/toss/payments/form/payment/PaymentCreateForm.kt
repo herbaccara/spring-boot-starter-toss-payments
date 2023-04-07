@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class PaymentCreateForm(
-    /***
+    /**
      * 결제 수단입니다.
      */
     val method: Method,
@@ -12,12 +12,12 @@ data class PaymentCreateForm(
     val orderId: String,
     val orderName: String,
 
-    /***
+    /**
      * 반드시 외부 서버에서 접근 가능한 url 이여야 한다.
      */
     val successUrl: String,
 
-    /***
+    /**
      * 반드시 외부 서버에서 접근 가능한 url 이여야 한다.
      */
     val failUrl: String,

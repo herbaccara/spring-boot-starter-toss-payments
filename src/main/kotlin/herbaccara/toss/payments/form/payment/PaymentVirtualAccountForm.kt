@@ -21,7 +21,7 @@ data class PaymentVirtualAccountForm(
     val escrowProducts: List<EscrowProduct>? = null
 ) {
     data class CashReceipt(
-        /***
+        /**
          * 현금영수증 발급 용도입니다. "소득공제", "지출증빙", "미발행" 중 하나입니다.
          */
         val type: String,

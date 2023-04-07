@@ -12,7 +12,7 @@ data class Transaction(
     val paymentKey: String,
     val orderId: String,
 
-    /***
+    /**
      * 코드값이 아닌 한글 문자열로 들어온다.
      * [Method]
      */

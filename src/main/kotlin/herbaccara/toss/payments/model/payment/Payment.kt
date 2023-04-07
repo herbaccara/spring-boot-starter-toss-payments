@@ -36,7 +36,7 @@ data class Payment(
     val transfer: Transfer? = null,
     val receipt: Receipt? = null,
 
-    /***
+    /**
      * <pre>
      * 결제창 정보입니다.
      *

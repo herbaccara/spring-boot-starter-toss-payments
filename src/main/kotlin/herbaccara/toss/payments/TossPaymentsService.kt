@@ -56,7 +56,7 @@ class TossPaymentsService @JvmOverloads constructor(
     interceptors: List<TossPaymentsClientHttpRequestInterceptor> = emptyList()
 ) {
     companion object {
-        /***
+        /**
          * [2022-11-16](https://docs.tosspayments.com/reference/release-note#2022-11-16)
          */
         const val API_VERSION = "2022-11-16"
@@ -115,7 +115,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 결제
 
-    /***
+    /**
      * <pre>
      * 결제 생성
      * successUrl, failUrl 은 반드시 외부 서버에서 접근 가능한 url 이여야 한다.
@@ -129,7 +129,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Payment::class.java)
     }
 
-    /***
+    /**
      * 결제 승인
      * @param form
      * @return
@@ -139,7 +139,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Payment::class.java)
     }
 
-    /***
+    /**
      * 결제 조회
      * @param paymentKey
      * @return
@@ -149,7 +149,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return getForObject(uri, Payment::class.java)
     }
 
-    /***
+    /**
      * 결제 조회
      * @param orderId
      * @return
@@ -159,7 +159,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return getForObject(uri, Payment::class.java)
     }
 
-    /***
+    /**
      * 결제 취소
      * @param paymentKey
      * @param form
@@ -174,7 +174,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return paymentCancel(paymentKey, PaymentCancelForm(cancelReason))
     }
 
-    /***
+    /**
      * 카드 번호 결제
      * @param form
      * @return
@@ -184,7 +184,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Payment::class.java)
     }
 
-    /***
+    /**
      * 가상계좌 발급 요청
      * @param form
      * @return
@@ -196,7 +196,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 빌링
 
-    /***
+    /**
      * customerKey로 카드 자동 결제 빌링키 발급 요청
      * @param form
      * @return
@@ -206,7 +206,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Billing::class.java)
     }
 
-    /***
+    /**
      * authKey로 카드 자동 결제 빌링키 발급 요청
      * @param form
      * @return
@@ -216,7 +216,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Billing::class.java)
     }
 
-    /***
+    /**
      * 카드 자동 결제 승인
      * @param billingKey
      * @param form
@@ -229,7 +229,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 거래 내역
 
-    /***
+    /**
      * 거래 내역 조회
      * @param form
      * @return
@@ -263,7 +263,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 정산
 
-    /***
+    /**
      * 정산 조회
      * @param form
      * @return
@@ -298,7 +298,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return settlements(SettlementListForm(startDate, endDate))
     }
 
-    /***
+    /**
      * 수동 정산 요청
      * @param paymentKey
      * @return
@@ -312,7 +312,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 현금영수증
 
-    /***
+    /**
      * 현금영수증 발급 요청
      * @param form
      * @return
@@ -322,7 +322,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, CashReceipt::class.java)
     }
 
-    /***
+    /**
      * 현금영수증 발급 취소 요청
      * @param receiptKey
      * @return
@@ -332,7 +332,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, null, CashReceipt::class.java)
     }
 
-    /***
+    /**
      * 현금영수증 조회
      * @param form
      * @return
@@ -365,7 +365,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 서브몰
 
-    /***
+    /**
      * 서브몰 등록
      * @param form
      * @return
@@ -375,7 +375,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Submall::class.java)
     }
 
-    /***
+    /**
      * 서브몰 조회
      * @return
      */
@@ -384,7 +384,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return getForObject(uri, Array<Submall>::class.java).toList()
     }
 
-    /***
+    /**
      * 서브몰 수정
      * @param form
      * @return
@@ -394,7 +394,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Submall::class.java)
     }
 
-    /***
+    /**
      * 서브몰 삭제
      * @param subMallId
      * @return
@@ -406,7 +406,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 서브몰 지급대행
 
-    /***
+    /**
      * 지급 가능한 잔액 조회
      * @return
      */
@@ -416,7 +416,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return json["balance"].asLong()
     }
 
-    /***
+    /**
      * 지급대행 요청
      * @param form
      * @return
@@ -426,7 +426,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return postForObject(uri, form, Array<Payout>::class.java).toList()
     }
 
-    /***
+    /**
      * 지급대행 단건 조회
      * @param payoutKey
      * @return
@@ -436,7 +436,7 @@ class TossPaymentsService @JvmOverloads constructor(
         return getForObject(uri, Payout::class.java)
     }
 
-    /***
+    /**
      * 지급대행 조회
      * @param startDate
      * @param endDate
@@ -461,7 +461,7 @@ class TossPaymentsService @JvmOverloads constructor(
 
     // 카드 혜택 조회
 
-    /***
+    /**
      * 카드 혜택 조회
      * [...](https://docs.tosspayments.com/reference#%EC%B9%B4%EB%93%9C-%ED%98%9C%ED%83%9D-%EC%A1%B0%ED%9A%8C-1)
      * @return

@@ -1,6 +1,6 @@
 package herbaccara.toss.payments.model.payment
 
-/***
+/**
  * 환불 처리 상태입니다. 아래와 같은 상태 값을 가질 수 있습니다.
  * NONE: 환불 요청이 없는 상태입니다.
  * PENDING: 환불을 처리 중인 상태입니다.

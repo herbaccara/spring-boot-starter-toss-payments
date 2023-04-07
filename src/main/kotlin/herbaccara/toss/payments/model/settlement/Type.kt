@@ -1,6 +1,6 @@
 package herbaccara.toss.payments.model.settlement
 
-/***
+/**
  * 수수료의 세부 타입입니다.
  * BASE: 기본 수수료
  * INSTALLMENT_DISCOUNT: 카드사 혹은 토스페이먼츠가 부담하는 무이자 할부 수수료

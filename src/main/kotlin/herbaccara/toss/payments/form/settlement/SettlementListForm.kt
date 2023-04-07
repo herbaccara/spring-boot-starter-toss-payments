@@ -13,12 +13,12 @@ class SettlementListForm(
 ) {
     @Suppress("EnumEntryName")
     enum class DateType {
-        /***
+        /**
          * 정산 매출일
          */
         soldDate,
 
-        /***
+        /**
          * 정산 지급일
          */
         paidOutDate
